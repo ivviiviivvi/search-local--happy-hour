@@ -1,52 +1,91 @@
 # Planning Guide
 
-HappyHourAI is the quickest path from "What's good tonight?" to finding the perfect happy hour deal near you - eliminating the hassle of checking dozens of websites. **Now enhanced with modern glassmorphism aesthetics, extensive animations, and dynamic 3D interactions.**
+HappyHourAI is a social platform connecting bartenders and drink enthusiasts through curated happy hour experiences. Bartenders ("the-pourer") create and manage their venue profiles with custom menus and themed events, while customers ("the-drinker") discover, review, and connect with their favorite spots. **Enhanced with modern glassmorphism aesthetics, extensive animations, dynamic 3D interactions, and comprehensive social features.**
 
 **Experience Qualities**:
-1. **Effortless** - Finding a great deal should take seconds, not minutes of scrolling through outdated websites. The interface flows naturally with intuitive interactions and smooth transitions.
-2. **Trustworthy** - Every deal shown is current, verified, and clearly timestamped so users feel confident. Visual cues reinforce reliability.
-3. **Joyful** - The experience should feel like the exciting start of a good night out, not a chore. Delightful animations and vibrant design evoke celebration and anticipation.
+1. **Connected** - The platform bridges bartenders and customers, fostering genuine relationships and community. Social features feel natural and encourage meaningful interactions.
+2. **Empowering** - Bartenders have complete control over their venue presence with professional tools. Customers discover personalized experiences and influence the scene through reviews and favorites.
+3. **Vibrant** - The experience captures the energy of nightlife culture with personality-driven profiles, themed events, and dynamic content that evolves with the community.
 
-**Complexity Level**: Light Application (multiple features with basic state) **→ Enhanced to Medium Application with advanced UI/UX**
-  - Core functionality includes search/filter, venue browsing, and deal discovery with persistent favorites and user preferences
-  - **NEW**: Advanced glassmorphism design system, 3D interactive elements, comprehensive animation framework, floating decorative elements, real-time statistics, and dynamic visual feedback throughout
+**Complexity Level**: Complex Application (advanced functionality, user accounts, social features)
+  - Dual user role system (bartender/customer) with role-specific interfaces and permissions
+  - Profile management with customization, media uploads, and personal branding
+  - Social interactions: reviews, ratings, comments, favorites, following
+  - Content creation: custom menus, themed events, special announcements
+  - Real-time updates and notifications for new deals and events
+  - **Enhanced UI/UX**: Advanced glassmorphism, 3D elements, comprehensive animations, floating decorations, real-time statistics
 
 ## Essential Features
 
-### Location-Based Happy Hour Discovery
-- **Functionality**: Search and display nearby venues with active happy hour deals based on user location or ZIP code input
-- **Purpose**: Instantly show relevant options without making users hunt through irrelevant results
-- **Trigger**: User opens app or enters a new location
-- **Progression**: Landing screen → Location permission/input → Filtered list of active deals → Venue details
-- **Success criteria**: Users can see 5-10 relevant venues within 3 seconds of providing location
+### User Role Selection & Onboarding
+- **Functionality**: New users select their role (the-pourer for bartenders, the-drinker for customers) with tailored onboarding flows
+- **Purpose**: Personalize the experience from the start, setting appropriate expectations and providing role-specific guidance
+- **Trigger**: First app launch or account creation
+- **Progression**: Welcome screen → Role selection → Role-specific onboarding → Profile setup → Dashboard
+- **Success criteria**: Users understand their role capabilities within 30 seconds; onboarding completion rate >80%
 
-### Time-Aware Deal Filtering
-- **Functionality**: Automatically highlight deals that are active right now, with ability to filter by specific times, days, and deal types
-- **Purpose**: Eliminate confusion about "when is this valid?" and help users plan ahead
-- **Trigger**: User views list or applies filter
-- **Progression**: View deals → Apply time/day filter → See refined results → Select venue
-- **Success criteria**: Deals clearly indicate current availability; filters reduce results meaningfully
+### Bartender Profile & Venue Management (the-pourer)
+- **Functionality**: Bartenders create detailed profiles with bio, photo, specialties, and signature drinks. Manage venue information, hours, ambiance photos
+- **Purpose**: Establish personal brand and venue identity; attract customers through authentic personality and professional presentation
+- **Trigger**: Bartender signup or profile edit action
+- **Progression**: Create profile → Add venue details → Upload media → Set specialties → Publish
+- **Success criteria**: Profile completion increases customer engagement by 3x; 90% of bartenders add custom photos
 
-### Venue Detail Pages
-- **Functionality**: Rich view of each venue showing address, current deals, menu items with prices, atmosphere tags, and user ratings
-- **Purpose**: Give users confidence to make a decision without needing to visit external sites
-- **Trigger**: User taps/clicks a venue from list or map
-- **Progression**: List view → Tap venue → See full details → Navigate or save
-- **Success criteria**: All essential decision-making info visible without scrolling excessively
+### Custom Menu Builder (the-pourer)
+- **Functionality**: Create and manage custom drink menus with categories, descriptions, pricing, ingredients, and photos. Add seasonal specials
+- **Purpose**: Showcase creativity and offerings; provide transparency on what's available; highlight signature creations
+- **Trigger**: Bartender accesses menu management section
+- **Progression**: Dashboard → Menu builder → Add/edit items → Categorize → Set pricing → Add photos → Publish updates
+- **Success criteria**: Menus with photos get 4x more engagement; customers can view full offerings without asking
 
-### Save & Share Favorites
-- **Functionality**: Bookmark favorite venues and share specific deals with friends via link
-- **Purpose**: Build habits and enable social coordination around happy hour plans
-- **Trigger**: Heart icon on venue card or share button
-- **Progression**: Find deal → Save/Share → Access later from favorites or send link
-- **Success criteria**: Favorites persist across sessions; shared links open directly to venue
+### Themed Event Creation (the-pourer)
+- **Functionality**: Bartenders create themed events (e.g., "80s Night," "Tiki Thursday," "Craft Cocktail Workshop") with special menus and promotions
+- **Purpose**: Drive traffic during slow periods; build community; showcase creativity and expertise
+- **Trigger**: Bartender plans special event or recurring theme night
+- **Progression**: Calendar → Create event → Set theme → Design special menu → Set date/time → Promote → Track RSVPs
+- **Success criteria**: Events get 5x engagement vs regular hours; 60% of attendees are repeat customers
 
-### Deal Type & Price Filtering
-- **Functionality**: Filter by drink type (beer, wine, cocktails), food availability, price range, and atmosphere tags
-- **Purpose**: Match user preferences and budgets without overwhelming them with irrelevant options
-- **Trigger**: User opens filter panel
-- **Progression**: View results → Open filters → Select criteria → View refined list
-- **Success criteria**: Each filter reduces results logically; multiple filters work together
+### Customer Discovery & Profiles (the-drinker)
+- **Functionality**: Customers create profiles with preferences, favorite drinks, dietary restrictions. Browse venues and bartenders. Location-based discovery
+- **Purpose**: Personalized recommendations; build drinking history; connect with favorite bartenders; discover new experiences
+- **Trigger**: Customer signup or browse venues
+- **Progression**: Create profile → Set preferences → Browse venues → Filter by criteria → Save favorites → Follow bartenders
+- **Success criteria**: Profile completion leads to 60% more relevant recommendations; users find preferred venue within 2 minutes
+
+### Social Reviews & Ratings System
+- **Functionality**: Customers rate venues (1-5 stars), write reviews, upload photos, rate specific drinks, tag atmosphere attributes
+- **Purpose**: Build trust through authentic feedback; help others discover quality; give bartenders constructive feedback
+- **Trigger**: After visiting venue or from venue detail page
+- **Progression**: Visit venue → Rate experience → Write review → Add photos → Tag categories → Submit → Share
+- **Success criteria**: 40% of visitors leave reviews; reviews influence 70% of new customer decisions
+
+### Following & Activity Feed
+- **Functionality**: Follow favorite bartenders and venues; see activity feed with new menus, events, specials, and reviews from followed accounts
+- **Purpose**: Stay connected with favorites; discover new offerings; build loyalty and community
+- **Trigger**: Follow button on profile or auto-display on app launch
+- **Progression**: Discover bartender/venue → Follow → Receive updates → Engage with content → Visit
+- **Success criteria**: Users with 3+ follows visit app 4x more frequently; 80% engagement rate on followed content
+
+### Smart Recommendations Engine
+- **Functionality**: AI-powered suggestions based on user preferences, visit history, ratings, time of day, location, and trending venues
+- **Purpose**: Reduce decision paralysis; introduce users to new experiences; increase discovery
+- **Trigger**: Dashboard load, search with empty results, or "Surprise Me" button
+- **Progression**: User opens app → View personalized recommendations → Filter by mood/occasion → Select venue → Visit
+- **Success criteria**: 50% of visits come from recommendations; 85% satisfaction rate
+
+### Bartender-Customer Messaging
+- **Functionality**: Direct messaging between bartenders and customers for reservations, special requests, event planning, menu questions
+- **Purpose**: Enable personal connection; handle special accommodations; build relationships; provide excellent service
+- **Trigger**: Message button on profile or venue page
+- **Progression**: Customer/bartender → Start conversation → Send message → Receive response → Continue dialogue
+- **Success criteria**: 60% response rate within 2 hours; messages lead to 40% higher visit rate
+
+### Loyalty & Achievement System
+- **Functionality**: Earn badges and points for visits, reviews, trying new drinks, attending events. Bartenders earn recognition for ratings, creativity
+- **Purpose**: Gamify experience; reward engagement; build habits; recognize top contributors
+- **Trigger**: Complete qualifying action (visit, review, etc.)
+- **Progression**: Action → Earn points/badge → Notification → View achievements → Share → Unlock rewards
+- **Success criteria**: Achievement users visit 3x more often; 70% share badges socially
 
 ## Edge Case Handling
 

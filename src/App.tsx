@@ -3,23 +3,32 @@ import { useKV } from '@github/spark/hooks';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Toaster } from '@/components/ui/sonner';
+import { toast } from 'sonner';
 import { VenueCard } from '@/components/VenueCard';
 import { VenueDetail } from '@/components/VenueDetail';
 import { FilterPanel } from '@/components/FilterPanel';
 import { FloatingDecor } from '@/components/FloatingDecor';
 import { QuickStats } from '@/components/QuickStats';
-import { MagnifyingGlass, FunnelSimple, Heart, MapPin, Sparkle } from '@phosphor-icons/react';
-import { Venue, FilterState } from '@/lib/types';
-import { MOCK_VENUES } from '@/lib/mock-data';
+import { RoleSelection } from '@/components/RoleSelection';
+import { BartenderCard } from '@/components/BartenderCard';
+import { EventCard } from '@/components/EventCard';
+import { MagnifyingGlass, FunnelSimple, Heart, MapPin, Sparkle, CalendarBlank, Users as UsersIcon, Fire } from '@phosphor-icons/react';
+import { Venue, FilterState, UserRole, ThemedEvent } from '@/lib/types';
+import { MOCK_VENUES, MOCK_BARTENDERS, MOCK_EVENTS } from '@/lib/mock-data';
 import { isDealActiveNow } from '@/lib/time-utils';
 import { motion, AnimatePresence } from 'framer-motion';
 
 function App() {
+  const [userRole, setUserRole] = useKV<UserRole>('user-role', null);
   const [favorites, setFavorites] = useKV<string[]>('favorites', []);
+  const [favoriteBartenders, setFavoriteBartenders] = useKV<string[]>('favorite-bartenders', []);
+  const [rsvpdEvents, setRsvpdEvents] = useKV<string[]>('rsvpd-events', []);
   const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [scrollY, setScrollY] = useState(0);
+  const [activeTab, setActiveTab] = useState('venues');
   const [filters, setFilters] = useState<FilterState>({
     dealTypes: [],
     priceLevel: [],
@@ -72,11 +81,47 @@ function App() {
     setFavorites((currentFavorites) => {
       const favs = currentFavorites || [];
       if (favs.includes(venueId)) {
+        toast.success('Removed from favorites');
         return favs.filter(id => id !== venueId);
       }
+      toast.success('Added to favorites!');
       return [...favs, venueId];
     });
   };
+
+  const toggleBartenderFollow = (bartenderId: string) => {
+    setFavoriteBartenders((currentFavorites) => {
+      const favs = currentFavorites || [];
+      if (favs.includes(bartenderId)) {
+        toast.success('Unfollowed bartender');
+        return favs.filter(id => id !== bartenderId);
+      }
+      toast.success('Following bartender!');
+      return [...favs, bartenderId];
+    });
+  };
+
+  const toggleEventRSVP = (eventId: string) => {
+    setRsvpdEvents((currentRSVPs) => {
+      const rsvps = currentRSVPs || [];
+      if (rsvps.includes(eventId)) {
+        toast.success('RSVP cancelled');
+        return rsvps.filter(id => id !== eventId);
+      }
+      toast.success('RSVP confirmed!');
+      return [...rsvps, eventId];
+    });
+  };
+
+  const allEvents = useMemo(() => {
+    const events: ThemedEvent[] = [];
+    MOCK_VENUES.forEach(venue => {
+      if (venue.events) {
+        venue.events.forEach(event => events.push(event));
+      }
+    });
+    return events.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  }, []);
 
   const activeFilterCount = 
     filters.dealTypes.length + 
@@ -84,6 +129,10 @@ function App() {
     (filters.activeNow ? 1 : 0);
 
   const headerOpacity = Math.min(scrollY / 100, 1);
+
+  if (!userRole) {
+    return <RoleSelection onSelectRole={setUserRole} />;
+  }
 
   return (
     <div className="min-h-screen relative overflow-hidden">
@@ -126,7 +175,9 @@ function App() {
                   <Sparkle weight="fill" className="text-accent" />
                   HappyHourAI
                 </h1>
-                <p className="text-sm text-muted-foreground font-medium">Less scrolling. More sipping.</p>
+                <p className="text-sm text-muted-foreground font-medium">
+                  {userRole === 'the-pourer' ? 'Bartender Dashboard' : 'Less scrolling. More sipping.'}
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -226,92 +277,215 @@ function App() {
             layout
             transition={{ type: 'spring', stiffness: 100, damping: 20 }}
           >
-            <QuickStats venues={filteredVenues} />
-            
-            <AnimatePresence mode="wait">
-              {filteredVenues.length === 0 ? (
-                <motion.div 
-                  key="empty"
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  className="text-center py-20"
-                >
-                  <motion.div 
-                    className="glass-card p-12 rounded-3xl inline-block stacked-element"
-                    animate={{ 
-                      y: [0, -10, 0],
-                    }}
-                    transition={{
-                      duration: 3,
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }}
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="glass-card p-2 rounded-3xl mb-8"
+              >
+                <TabsList className="grid w-full grid-cols-3 bg-transparent gap-2">
+                  <TabsTrigger 
+                    value="venues" 
+                    className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-primary-foreground rounded-2xl font-bold"
                   >
+                    <Fire className="w-5 h-5 mr-2" weight="fill" />
+                    Venues
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="bartenders"
+                    className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-secondary data-[state=active]:to-accent data-[state=active]:text-secondary-foreground rounded-2xl font-bold"
+                  >
+                    <UsersIcon className="w-5 h-5 mr-2" weight="fill" />
+                    Bartenders
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="events"
+                    className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-accent data-[state=active]:to-secondary data-[state=active]:text-accent-foreground rounded-2xl font-bold"
+                  >
+                    <CalendarBlank className="w-5 h-5 mr-2" weight="fill" />
+                    Events
+                  </TabsTrigger>
+                </TabsList>
+              </motion.div>
+
+              <TabsContent value="venues" className="mt-0">
+                <QuickStats venues={filteredVenues} />
+                
+                <AnimatePresence mode="wait">
+                  {filteredVenues.length === 0 ? (
                     <motion.div 
-                      className="text-8xl mb-6"
-                      animate={{ rotate: [0, 10, -10, 0] }}
-                      transition={{ duration: 2, repeat: Infinity }}
+                      key="empty"
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      className="text-center py-20"
                     >
-                      🍹
-                    </motion.div>
-                    <h2 className="text-3xl font-bold mb-3 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                      No deals found
-                    </h2>
-                    <p className="text-muted-foreground mb-6 text-lg">
-                      Try adjusting your filters or search terms
-                    </p>
-                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                      <Button 
-                        size="lg"
-                        onClick={() => setFilters({
-                          dealTypes: [],
-                          priceLevel: [],
-                          activeNow: false,
-                          searchQuery: ''
-                        })}
-                        className="bg-gradient-to-r from-accent to-secondary text-accent-foreground shadow-lg hover:shadow-xl transition-all duration-300"
+                      <motion.div 
+                        className="glass-card p-12 rounded-3xl inline-block stacked-element"
+                        animate={{ 
+                          y: [0, -10, 0],
+                        }}
+                        transition={{
+                          duration: 3,
+                          repeat: Infinity,
+                          ease: "easeInOut"
+                        }}
                       >
-                        Clear All Filters
-                      </Button>
+                        <motion.div 
+                          className="text-8xl mb-6"
+                          animate={{ rotate: [0, 10, -10, 0] }}
+                          transition={{ duration: 2, repeat: Infinity }}
+                        >
+                          🍹
+                        </motion.div>
+                        <h2 className="text-3xl font-bold mb-3 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                          No deals found
+                        </h2>
+                        <p className="text-muted-foreground mb-6 text-lg">
+                          Try adjusting your filters or search terms
+                        </p>
+                        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                          <Button 
+                            size="lg"
+                            onClick={() => setFilters({
+                              dealTypes: [],
+                              priceLevel: [],
+                              activeNow: false,
+                              searchQuery: ''
+                            })}
+                            className="bg-gradient-to-r from-accent to-secondary text-accent-foreground shadow-lg hover:shadow-xl transition-all duration-300"
+                          >
+                            Clear All Filters
+                          </Button>
+                        </motion.div>
+                      </motion.div>
                     </motion.div>
-                  </motion.div>
-                </motion.div>
-              ) : (
-                <motion.div 
-                  key="grid"
-                  className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
+                  ) : (
+                    <motion.div 
+                      key="grid"
+                      className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                    >
+                      {filteredVenues.map((venue, index) => (
+                        <motion.div
+                          key={venue.id}
+                          initial={{ opacity: 0, y: 50 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, scale: 0.9 }}
+                          transition={{ 
+                            delay: index * 0.05,
+                            type: 'spring',
+                            stiffness: 100,
+                            damping: 15
+                          }}
+                        >
+                          <VenueCard
+                            venue={venue}
+                            isFavorite={(favorites || []).includes(venue.id)}
+                            onToggleFavorite={toggleFavorite}
+                            onClick={() => setSelectedVenue(venue)}
+                          />
+                        </motion.div>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </TabsContent>
+
+              <TabsContent value="bartenders" className="mt-0">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="glass-card p-8 rounded-3xl mb-8"
                 >
-                  {filteredVenues.map((venue, index) => (
+                  <div className="flex items-center gap-3 mb-2">
+                    <Sparkle weight="fill" className="w-6 h-6 text-accent" />
+                    <h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                      Featured Bartenders
+                    </h2>
+                  </div>
+                  <p className="text-muted-foreground text-lg">
+                    Connect with expert mixologists and craft beverage specialists
+                  </p>
+                </motion.div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                  {MOCK_BARTENDERS.map((bartender, index) => (
                     <motion.div
-                      key={venue.id}
+                      key={bartender.id}
                       initial={{ opacity: 0, y: 50 }}
                       animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, scale: 0.9 }}
                       transition={{ 
-                        delay: index * 0.05,
+                        delay: index * 0.1,
                         type: 'spring',
                         stiffness: 100,
                         damping: 15
                       }}
                     >
-                      <VenueCard
-                        venue={venue}
-                        isFavorite={(favorites || []).includes(venue.id)}
-                        onToggleFavorite={toggleFavorite}
-                        onClick={() => setSelectedVenue(venue)}
+                      <BartenderCard
+                        bartender={bartender}
+                        isFollowing={(favoriteBartenders || []).includes(bartender.id)}
+                        onToggleFollow={toggleBartenderFollow}
+                        onViewProfile={(id) => {
+                          const venue = MOCK_VENUES.find(v => v.bartenders?.some(b => b.id === id));
+                          if (venue) setSelectedVenue(venue);
+                        }}
                       />
                     </motion.div>
                   ))}
+                </div>
+              </TabsContent>
+
+              <TabsContent value="events" className="mt-0">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="glass-card p-8 rounded-3xl mb-8"
+                >
+                  <div className="flex items-center gap-3 mb-2">
+                    <CalendarBlank weight="fill" className="w-6 h-6 text-accent" />
+                    <h2 className="text-3xl font-bold bg-gradient-to-r from-accent to-secondary bg-clip-text text-transparent">
+                      Upcoming Events
+                    </h2>
+                  </div>
+                  <p className="text-muted-foreground text-lg">
+                    Don't miss out on themed nights and special experiences
+                  </p>
                 </motion.div>
-              )}
-            </AnimatePresence>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                  {allEvents.map((event, index) => (
+                    <motion.div
+                      key={event.id}
+                      initial={{ opacity: 0, y: 50 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ 
+                        delay: index * 0.1,
+                        type: 'spring',
+                        stiffness: 100,
+                        damping: 15
+                      }}
+                    >
+                      <EventCard
+                        event={event}
+                        isRSVPd={(rsvpdEvents || []).includes(event.id)}
+                        onRSVP={toggleEventRSVP}
+                        onViewDetails={(id) => {
+                          const venue = MOCK_VENUES.find(v => v.events?.some(e => e.id === id));
+                          if (venue) setSelectedVenue(venue);
+                        }}
+                      />
+                    </motion.div>
+                  ))}
+                </div>
+              </TabsContent>
+            </Tabs>
 
             <AnimatePresence>
-              {(favorites || []).length > 0 && filteredVenues.length > 0 && (
+              {(favorites || []).length > 0 && activeTab === 'venues' && filteredVenues.length > 0 && (
                 <motion.div 
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
