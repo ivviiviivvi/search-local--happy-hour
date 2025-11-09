@@ -12,7 +12,8 @@ export const MOCK_BARTENDERS: Bartender[] = [
     yearsExperience: 12,
     followerCount: 1247,
     rating: 4.8,
-    isVerified: true
+    isVerified: true,
+    thematicStyle: 'archetypal'
   },
   {
     id: 'b2',
@@ -25,7 +26,8 @@ export const MOCK_BARTENDERS: Bartender[] = [
     yearsExperience: 8,
     followerCount: 892,
     rating: 4.9,
-    isVerified: true
+    isVerified: true,
+    thematicStyle: 'ancient-rome'
   },
   {
     id: 'b3',
@@ -38,7 +40,50 @@ export const MOCK_BARTENDERS: Bartender[] = [
     yearsExperience: 15,
     followerCount: 2103,
     rating: 4.7,
-    isVerified: true
+    isVerified: true,
+    thematicStyle: 'prohibition'
+  },
+  {
+    id: 'b4',
+    name: 'Ernest "Papa" Morrison',
+    bio: 'If Hemingway tended bar, this would be him. Master of strong drinks and stronger stories. Every cocktail comes with a tale.',
+    avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&q=80',
+    venueId: '6',
+    specialties: ['Whiskey Neat', 'Classic Cocktails', 'Storytelling'],
+    signatureDrinks: ['Death in the Afternoon', 'Papa Doble', 'Old Fashioned'],
+    yearsExperience: 22,
+    followerCount: 3456,
+    rating: 4.9,
+    isVerified: true,
+    thematicStyle: 'famous-drunks'
+  },
+  {
+    id: 'b5',
+    name: 'Dorothy Parker-Mills',
+    bio: 'Wit as sharp as her martinis. Specializing in pre-prohibition classics with a modern tongue-in-cheek twist.',
+    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&q=80',
+    venueId: '6',
+    specialties: ['Gin Martinis', 'Literary Classics', 'Witty Banter'],
+    signatureDrinks: ['The Algonquin', 'Bee\'s Knees', 'French 75'],
+    yearsExperience: 14,
+    followerCount: 2891,
+    rating: 4.8,
+    isVerified: true,
+    thematicStyle: 'literary'
+  },
+  {
+    id: 'b6',
+    name: 'Aurelius Vinifera',
+    bio: 'Bringing ancient Roman hospitality to modern times. Wine, mead, and mulled delights served with imperial grandeur.',
+    avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&q=80',
+    venueId: '2',
+    specialties: ['Ancient Wines', 'Mead', 'Mulled Drinks'],
+    signatureDrinks: ['Mulsum', 'Posca Revival', 'Falernian Flight'],
+    yearsExperience: 11,
+    followerCount: 1567,
+    rating: 4.6,
+    isVerified: true,
+    thematicStyle: 'ancient-rome'
   }
 ];
 
@@ -108,6 +153,25 @@ export const MOCK_MENU_ITEMS: Record<string, MenuItem[]> = {
       price: '$12',
       category: 'Food',
       available: true
+    },
+    {
+      id: 'm5a',
+      name: 'Mulsum (Honey Wine)',
+      description: 'Ancient Roman sweet wine infused with honey and warm spices - Aurelius\'s specialty',
+      price: '$14',
+      category: 'Ancient Rome Collection',
+      isSignature: true,
+      available: true
+    },
+    {
+      id: 'm5b',
+      name: 'Posca Revival',
+      description: 'Roman soldier\'s drink reimagined: wine vinegar, honey, herbs - surprisingly refreshing',
+      price: '$11',
+      category: 'Ancient Rome Collection',
+      ingredients: ['Wine Vinegar', 'Honey', 'Coriander', 'Mint'],
+      isSignature: true,
+      available: true
     }
   ],
   '3': [
@@ -137,6 +201,68 @@ export const MOCK_MENU_ITEMS: Record<string, MenuItem[]> = {
       category: 'Wine',
       available: true
     }
+  ],
+  '6': [
+    {
+      id: 'm11',
+      name: 'Death in the Afternoon',
+      description: 'Hemingway\'s favorite - absinthe and champagne. "Pour one jigger absinthe into a champagne glass. Add iced champagne until it attains the proper opalescent milkiness."',
+      price: '$18',
+      category: 'Famous Drunks',
+      ingredients: ['Absinthe', 'Champagne'],
+      isSignature: true,
+      available: true
+    },
+    {
+      id: 'm12',
+      name: 'Papa Doble',
+      description: 'Hemingway\'s double daiquiri - white rum, grapefruit, lime, maraschino, no sugar',
+      price: '$16',
+      category: 'Famous Drunks',
+      ingredients: ['White Rum', 'Grapefruit', 'Lime', 'Maraschino'],
+      isSignature: true,
+      available: true
+    },
+    {
+      id: 'm13',
+      name: 'The Algonquin',
+      description: 'Dorothy Parker\'s favorite haunt - rye whiskey, dry vermouth, pineapple juice',
+      price: '$14',
+      category: 'Literary Cocktails',
+      ingredients: ['Rye Whiskey', 'Dry Vermouth', 'Pineapple Juice'],
+      isSignature: true,
+      available: true
+    },
+    {
+      id: 'm14',
+      name: 'Bee\'s Knees',
+      description: 'Prohibition-era classic - gin, lemon, honey syrup. Made to mask bathtub gin.',
+      price: '$13',
+      category: 'Prohibition Classics',
+      ingredients: ['Gin', 'Lemon', 'Honey Syrup'],
+      isSignature: true,
+      available: true
+    },
+    {
+      id: 'm15',
+      name: 'French 75',
+      description: 'Named after WWI artillery - gin, lemon, sugar, champagne with a kick',
+      price: '$15',
+      category: 'Literary Cocktails',
+      ingredients: ['Gin', 'Lemon', 'Sugar', 'Champagne'],
+      isSignature: true,
+      available: true
+    },
+    {
+      id: 'm16',
+      name: 'Sazerac',
+      description: 'New Orleans original from the 1800s - rye, absinthe rinse, Peychaud\'s bitters',
+      price: '$17',
+      category: 'Prohibition Classics',
+      ingredients: ['Rye Whiskey', 'Absinthe', 'Peychaud\'s Bitters', 'Sugar'],
+      isSignature: true,
+      available: true
+    }
   ]
 };
 
@@ -147,6 +273,7 @@ export const MOCK_EVENTS: Record<string, ThemedEvent[]> = {
       title: 'Tiki Paradise Night',
       description: 'Transport yourself to a tropical paradise with exotic cocktails, tiki decorations, and island vibes',
       theme: 'Tiki',
+      drinkingTheme: 'archetypal',
       date: new Date(Date.now() + 1000 * 60 * 60 * 24 * 5).toISOString(),
       startTime: '18:00',
       endTime: '23:00',
@@ -159,6 +286,7 @@ export const MOCK_EVENTS: Record<string, ThemedEvent[]> = {
       title: 'Craft Cocktail Workshop',
       description: 'Learn from Marcus Chen how to make signature cocktails. Includes all materials and tastings.',
       theme: 'Educational',
+      drinkingTheme: 'archetypal',
       date: new Date(Date.now() + 1000 * 60 * 60 * 24 * 12).toISOString(),
       startTime: '19:00',
       endTime: '21:00',
@@ -169,10 +297,23 @@ export const MOCK_EVENTS: Record<string, ThemedEvent[]> = {
   '2': [
     {
       id: 'e3',
+      title: 'Bacchanalia Revival',
+      description: 'An evening of ancient Roman revelry! Wine, mead, and mulled drinks served in amphora-style vessels. Togas encouraged but not required.',
+      theme: 'Ancient Rome',
+      drinkingTheme: 'ancient-rome',
+      date: new Date(Date.now() + 1000 * 60 * 60 * 24 * 3).toISOString(),
+      startTime: '19:00',
+      endTime: '23:00',
+      image: 'https://images.unsplash.com/photo-1555669784-8e8f49564142?w=800&q=80',
+      rsvpCount: 67,
+      tags: ['Ancient Rome', 'Wine', 'Mead', 'Historical']
+    },
+    {
+      id: 'e3b',
       title: 'Oktoberfest Celebration',
       description: 'Authentic German beers, pretzels, bratwurst, and live music all night long!',
       theme: 'Oktoberfest',
-      date: new Date(Date.now() + 1000 * 60 * 60 * 24 * 3).toISOString(),
+      date: new Date(Date.now() + 1000 * 60 * 60 * 24 * 18).toISOString(),
       startTime: '17:00',
       endTime: '22:00',
       image: 'https://images.unsplash.com/photo-1554692090-b8d076e0d5e2?w=800&q=80',
@@ -191,6 +332,46 @@ export const MOCK_EVENTS: Record<string, ThemedEvent[]> = {
       endTime: '21:00',
       rsvpCount: 35,
       tags: ['Wine', 'Jazz', 'Sunset']
+    }
+  ],
+  '6': [
+    {
+      id: 'e5',
+      title: 'Hemingway\'s Paris: A Literary Evening',
+      description: 'Journey through 1920s Paris with Papa Morrison. Death in the Afternoon cocktails, readings from "A Moveable Feast," and tales of the Lost Generation.',
+      theme: 'Literary History',
+      drinkingTheme: 'famous-drunks',
+      date: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7).toISOString(),
+      startTime: '19:00',
+      endTime: '22:00',
+      image: 'https://images.unsplash.com/photo-1481833761820-0509d3217039?w=800&q=80',
+      rsvpCount: 52,
+      tags: ['Literary', 'Hemingway', 'Historic', 'Readings']
+    },
+    {
+      id: 'e6',
+      title: 'The Algonquin Round Table',
+      description: 'Dorothy Parker-Mills hosts an evening of wit, martinis, and literary banter. Bring your best bon mots and sharpest quips.',
+      theme: 'Literary Salon',
+      drinkingTheme: 'literary',
+      date: new Date(Date.now() + 1000 * 60 * 60 * 24 * 10).toISOString(),
+      startTime: '18:30',
+      endTime: '22:00',
+      rsvpCount: 41,
+      tags: ['Literary', 'Salon', 'Dorothy Parker', 'Martinis']
+    },
+    {
+      id: 'e7',
+      title: 'Speakeasy Saturday: Prohibition Night',
+      description: 'Step back to 1925. Password required at the door. Bathtub gin, jazz music, and cocktails that made the era roar.',
+      theme: 'Prohibition Era',
+      drinkingTheme: 'prohibition',
+      date: new Date(Date.now() + 1000 * 60 * 60 * 24 * 14).toISOString(),
+      startTime: '20:00',
+      endTime: '01:00',
+      image: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=800&q=80',
+      rsvpCount: 78,
+      tags: ['Prohibition', 'Speakeasy', 'Jazz', '1920s']
     }
   ]
 };
@@ -262,6 +443,7 @@ export const MOCK_VENUES: Venue[] = [
     rating: 4.5,
     reviewCount: 342,
     tags: ['Rooftop', 'Cocktails', 'Outdoor'],
+    drinkingThemes: ['archetypal'],
     image: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=800&q=80',
     images: [
       'https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=800&q=80',
@@ -315,6 +497,7 @@ export const MOCK_VENUES: Venue[] = [
     rating: 4.7,
     reviewCount: 523,
     tags: ['Craft Beer', 'Casual', 'Games'],
+    drinkingThemes: ['ancient-rome'],
     image: 'https://images.unsplash.com/photo-1572116469696-31de0f17cc34?w=800&q=80',
     images: [
       'https://images.unsplash.com/photo-1572116469696-31de0f17cc34?w=800&q=80',
@@ -322,10 +505,10 @@ export const MOCK_VENUES: Venue[] = [
     ],
     distance: 0.7,
     lastUpdated: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(),
-    description: 'Neighborhood craft beer haven with 30+ rotating taps featuring local and regional breweries. Cozy atmosphere with board games.',
+    description: 'Neighborhood craft beer haven with 30+ rotating taps featuring local and regional breweries. Cozy atmosphere with board games. Home to Aurelius and his Ancient Rome collection.',
     followerCount: 2134,
     amenities: ['Board Games', 'Dog Friendly', 'Darts', 'Pool Table'],
-    bartenders: [MOCK_BARTENDERS[1]],
+    bartenders: [MOCK_BARTENDERS[1], MOCK_BARTENDERS[5]],
     menu: MOCK_MENU_ITEMS['2'],
     events: MOCK_EVENTS['2'],
     hours: {
@@ -367,6 +550,7 @@ export const MOCK_VENUES: Venue[] = [
     rating: 4.3,
     reviewCount: 287,
     tags: ['Upscale', 'Ocean View', 'Live Music'],
+    drinkingThemes: ['prohibition'],
     image: 'https://images.unsplash.com/photo-1566417713940-fe7c737a9ef2?w=800&q=80',
     images: [
       'https://images.unsplash.com/photo-1566417713940-fe7c737a9ef2?w=800&q=80',
@@ -472,22 +656,35 @@ export const MOCK_VENUES: Venue[] = [
     priceLevel: 3,
     rating: 4.8,
     reviewCount: 456,
-    tags: ['Whiskey Bar', 'Speakeasy', 'Craft Cocktails'],
+    tags: ['Whiskey Bar', 'Speakeasy', 'Craft Cocktails', 'Literary'],
+    drinkingThemes: ['famous-drunks', 'literary', 'prohibition'],
     image: 'https://images.unsplash.com/photo-1509669803555-fd5dbb783b5f?w=800&q=80',
     distance: 1.5,
     lastUpdated: new Date(Date.now() - 1000 * 60 * 60 * 8).toISOString(),
-    description: 'Hidden speakeasy-style whiskey bar with over 200 bourbon selections. Prohibition-era ambiance with modern craft cocktails.',
+    description: 'Hidden speakeasy-style whiskey bar with over 200 bourbon selections. Prohibition-era ambiance, literary heritage, and cocktails favored by famous writers. Papa Morrison and Dorothy Parker-Mills craft legendary drinks with legendary stories.',
     followerCount: 1654,
-    amenities: ['Speakeasy', 'Whiskey Collection', 'Reservations', 'Cigar Lounge'],
+    amenities: ['Speakeasy', 'Whiskey Collection', 'Reservations', 'Cigar Lounge', 'Book Library'],
+    bartenders: [MOCK_BARTENDERS[3], MOCK_BARTENDERS[4]],
+    menu: MOCK_MENU_ITEMS['6'],
+    events: MOCK_EVENTS['6'],
+    hours: {
+      monday: null,
+      tuesday: { start: '18:00', end: '00:00' },
+      wednesday: { start: '18:00', end: '00:00' },
+      thursday: { start: '18:00', end: '01:00' },
+      friday: { start: '18:00', end: '02:00' },
+      saturday: { start: '18:00', end: '02:00' },
+      sunday: { start: '18:00', end: '23:00' }
+    },
     deals: [
       {
         id: 'd9',
-        title: 'Bourbon Hour',
-        description: '$8 select bourbons and classic cocktails',
+        title: 'Literary Hour',
+        description: '$8 select bourbons and classic literary cocktails',
         type: 'cocktails',
         price: '$8',
         daysActive: ['thursday', 'friday'],
-        timeRange: { start: '17:00', end: '19:00' }
+        timeRange: { start: '18:00', end: '20:00' }
       }
     ]
   }

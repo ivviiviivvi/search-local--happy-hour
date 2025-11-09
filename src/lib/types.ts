@@ -2,6 +2,7 @@ export type DealType = 'beer' | 'wine' | 'cocktails' | 'food' | 'all';
 export type PriceLevel = 1 | 2 | 3;
 export type DayOfWeek = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday';
 export type UserRole = 'the-pourer' | 'the-drinker' | null;
+export type DrinkingTheme = 'famous-drunks' | 'literary' | 'archetypal' | 'prohibition' | 'ancient-rome';
 
 export interface TimeRange {
   start: string;
@@ -35,6 +36,7 @@ export interface ThemedEvent {
   title: string;
   description: string;
   theme: string;
+  drinkingTheme?: DrinkingTheme;
   date: string;
   startTime: string;
   endTime: string;
@@ -70,6 +72,7 @@ export interface Bartender {
   followerCount: number;
   rating: number;
   isVerified: boolean;
+  thematicStyle?: DrinkingTheme;
 }
 
 export interface Venue {
@@ -93,6 +96,7 @@ export interface Venue {
   hours?: Record<DayOfWeek, TimeRange | null>;
   followerCount?: number;
   amenities?: string[];
+  drinkingThemes?: DrinkingTheme[];
 }
 
 export interface UserProfile {
@@ -141,4 +145,5 @@ export interface FilterState {
   searchQuery: string;
   hasEvents?: boolean;
   verified?: boolean;
+  drinkingThemes?: DrinkingTheme[];
 }

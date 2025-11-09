@@ -1,10 +1,18 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Heart, MapPin, Star, Clock, Sparkle } from '@phosphor-icons/react';
-import { Venue } from '@/lib/types';
+import { Heart, MapPin, Star, Clock, Sparkle, BookOpen, Crown, Scroll, MaskHappy, Columns } from '@phosphor-icons/react';
+import { Venue, DrinkingTheme } from '@/lib/types';
 import { isDealActiveNow, formatTimeRange, getRelativeTime } from '@/lib/time-utils';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 import { useState } from 'react';
+
+const themeConfig: Record<DrinkingTheme, { label: string; icon: React.ReactNode }> = {
+  'famous-drunks': { label: 'Famous Drunks', icon: <Crown weight="fill" className="w-3 h-3" /> },
+  'literary': { label: 'Literary', icon: <BookOpen weight="fill" className="w-3 h-3" /> },
+  'archetypal': { label: 'Archetypal', icon: <MaskHappy weight="fill" className="w-3 h-3" /> },
+  'prohibition': { label: 'Prohibition', icon: <Scroll weight="fill" className="w-3 h-3" /> },
+  'ancient-rome': { label: 'Ancient Rome', icon: <Columns weight="fill" className="w-3 h-3" /> },
+};
 
 interface VenueCardProps {
   venue: Venue;
@@ -167,6 +175,20 @@ export function VenueCard({ venue, isFavorite, onToggleFavorite, onClick }: Venu
                 <Badge variant="secondary" className="text-xs font-semibold px-3 py-1 bg-gradient-to-r from-muted to-muted/50">
                   <Sparkle className="w-3 h-3 mr-1" weight="fill" />
                   {tag}
+                </Badge>
+              </motion.div>
+            ))}
+            {venue.drinkingThemes && venue.drinkingThemes.slice(0, 1).map((theme, index) => (
+              <motion.div
+                key={theme}
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: (venue.tags.slice(0, 3).length + index) * 0.1 }}
+                whileHover={{ scale: 1.1 }}
+              >
+                <Badge className="text-xs font-bold px-3 py-1 bg-gradient-to-r from-accent/20 to-secondary/20 text-accent border-accent/40">
+                  {themeConfig[theme].icon}
+                  <span className="ml-1">{themeConfig[theme].label}</span>
                 </Badge>
               </motion.div>
             ))}

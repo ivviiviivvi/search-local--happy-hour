@@ -10,9 +10,14 @@ import {
   ForkKnife,
   CurrencyDollar,
   Clock,
-  Sparkle
+  Sparkle,
+  BookOpen,
+  Crown,
+  Scroll,
+  MaskHappy,
+  Columns
 } from '@phosphor-icons/react';
-import { DealType, PriceLevel, FilterState } from '@/lib/types';
+import { DealType, PriceLevel, FilterState, DrinkingTheme } from '@/lib/types';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface FilterPanelProps {
@@ -26,6 +31,14 @@ export function FilterPanel({ filters, onFiltersChange }: FilterPanelProps) {
     { type: 'wine', label: 'Wine', icon: <Wine weight="fill" /> },
     { type: 'cocktails', label: 'Cocktails', icon: <Martini weight="fill" /> },
     { type: 'food', label: 'Food', icon: <ForkKnife weight="fill" /> },
+  ];
+
+  const themeOptions: { theme: DrinkingTheme; label: string; icon: React.ReactNode; description: string }[] = [
+    { theme: 'famous-drunks', label: 'Famous Drunks', icon: <Crown weight="fill" />, description: 'Hemingway, Bukowski & legends' },
+    { theme: 'literary', label: 'Literary', icon: <BookOpen weight="fill" />, description: 'Writers\' haunts & classics' },
+    { theme: 'archetypal', label: 'Archetypal', icon: <MaskHappy weight="fill" />, description: 'Timeless drinking experiences' },
+    { theme: 'prohibition', label: 'Prohibition', icon: <Scroll weight="fill" />, description: 'Speakeasy & 1920s era' },
+    { theme: 'ancient-rome', label: 'Ancient Rome', icon: <Columns weight="fill" />, description: 'Roman wine & hospitality' },
   ];
 
   const priceLevelOptions: PriceLevel[] = [1, 2, 3];
@@ -44,17 +57,27 @@ export function FilterPanel({ filters, onFiltersChange }: FilterPanelProps) {
     onFiltersChange({ ...filters, priceLevel: newLevels });
   };
 
+  const toggleTheme = (theme: DrinkingTheme) => {
+    const currentThemes = filters.drinkingThemes || [];
+    const newThemes = currentThemes.includes(theme)
+      ? currentThemes.filter(t => t !== theme)
+      : [...currentThemes, theme];
+    onFiltersChange({ ...filters, drinkingThemes: newThemes });
+  };
+
   const hasActiveFilters = 
     filters.dealTypes.length > 0 || 
     filters.priceLevel.length > 0 || 
-    filters.activeNow;
+    filters.activeNow ||
+    (filters.drinkingThemes && filters.drinkingThemes.length > 0);
 
   const clearFilters = () => {
     onFiltersChange({
       dealTypes: [],
       priceLevel: [],
       activeNow: false,
-      searchQuery: filters.searchQuery
+      searchQuery: filters.searchQuery,
+      drinkingThemes: []
     });
   };
 
@@ -172,6 +195,56 @@ export function FilterPanel({ filters, onFiltersChange }: FilterPanelProps) {
 
       <div className="space-y-4">
         <Label className="text-base font-bold flex items-center gap-2">
+          <Sparkle className="w-5 h-5 text-accent" weight="fill" />
+          Drinking Themes
+        </Label>
+        <p className="text-xs text-muted-foreground">
+          Explore venues and events by drinking culture & history
+        </p>
+        <div className="space-y-2">
+          {themeOptions.map((option, index) => {
+            const isSelected = (filters.drinkingThemes || []).includes(option.theme);
+            return (
+              <motion.div
+                key={option.theme}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.05 }}
+                whileHover={{ scale: 1.02, x: 5 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Button
+                  variant={isSelected ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => toggleTheme(option.theme)}
+                  className={`justify-start gap-3 w-full h-auto py-3 px-4 transition-all duration-300 ${
+                    isSelected 
+                      ? 'bg-gradient-to-r from-accent to-secondary text-accent-foreground shadow-lg' 
+                      : 'glass-morphic border-border/50 hover:border-accent/50'
+                  }`}
+                >
+                  <motion.div
+                    animate={isSelected ? { rotate: [0, 15, -15, 0], scale: [1, 1.2, 1] } : {}}
+                    transition={{ duration: 0.6 }}
+                    className="text-xl"
+                  >
+                    {option.icon}
+                  </motion.div>
+                  <div className="flex flex-col items-start">
+                    <span className="font-semibold text-sm">{option.label}</span>
+                    <span className="text-xs opacity-80 font-normal">{option.description}</span>
+                  </div>
+                </Button>
+              </motion.div>
+            );
+          })}
+        </div>
+      </div>
+
+      <Separator className="bg-border/30" />
+
+      <div className="space-y-4">
+        <Label className="text-base font-bold flex items-center gap-2">
           <CurrencyDollar className="w-5 h-5 text-accent" weight="fill" />
           Price Level
         </Label>
@@ -252,6 +325,18 @@ export function FilterPanel({ filters, onFiltersChange }: FilterPanelProps) {
                     >
                       <Badge className="bg-secondary text-secondary-foreground">
                         {'$'.repeat(level)}
+                      </Badge>
+                    </motion.div>
+                  ))}
+                  {(filters.drinkingThemes || []).map((theme) => (
+                    <motion.div
+                      key={theme}
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      exit={{ scale: 0 }}
+                    >
+                      <Badge className="bg-accent text-accent-foreground text-xs">
+                        {theme.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
                       </Badge>
                     </motion.div>
                   ))}

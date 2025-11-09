@@ -6,11 +6,24 @@ import {
   Clock, 
   Users, 
   Sparkle,
-  ArrowRight
+  ArrowRight,
+  BookOpen,
+  Crown,
+  Scroll,
+  MaskHappy,
+  Columns
 } from '@phosphor-icons/react';
-import { ThemedEvent } from '@/lib/types';
+import { ThemedEvent, DrinkingTheme } from '@/lib/types';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
+
+const themeConfig: Record<DrinkingTheme, { label: string; icon: React.ReactNode; color: string }> = {
+  'famous-drunks': { label: 'Famous Drunks', icon: <Crown weight="fill" className="w-3 h-3" />, color: 'from-amber-500/20 to-yellow-500/20' },
+  'literary': { label: 'Literary', icon: <BookOpen weight="fill" className="w-3 h-3" />, color: 'from-purple-500/20 to-indigo-500/20' },
+  'archetypal': { label: 'Archetypal', icon: <MaskHappy weight="fill" className="w-3 h-3" />, color: 'from-green-500/20 to-teal-500/20' },
+  'prohibition': { label: 'Prohibition', icon: <Scroll weight="fill" className="w-3 h-3" />, color: 'from-slate-500/20 to-gray-500/20' },
+  'ancient-rome': { label: 'Ancient Rome', icon: <Columns weight="fill" className="w-3 h-3" />, color: 'from-red-500/20 to-orange-500/20' },
+};
 
 interface EventCardProps {
   event: ThemedEvent;
@@ -90,9 +103,17 @@ export function EventCard({
             >
               {event.title}
             </motion.h3>
-            <Badge className="bg-secondary/90 text-secondary-foreground backdrop-blur-sm">
-              {event.theme}
-            </Badge>
+            <div className="flex flex-wrap gap-2">
+              <Badge className="bg-secondary/90 text-secondary-foreground backdrop-blur-sm">
+                {event.theme}
+              </Badge>
+              {event.drinkingTheme && (
+                <Badge className={`bg-gradient-to-r ${themeConfig[event.drinkingTheme].color} backdrop-blur-sm border-white/30 text-white font-bold`}>
+                  {themeConfig[event.drinkingTheme].icon}
+                  <span className="ml-1">{themeConfig[event.drinkingTheme].label}</span>
+                </Badge>
+              )}
+            </div>
           </div>
         </div>
 

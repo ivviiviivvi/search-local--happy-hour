@@ -33,7 +33,8 @@ function App() {
     dealTypes: [],
     priceLevel: [],
     activeNow: false,
-    searchQuery: ''
+    searchQuery: '',
+    drinkingThemes: []
   });
 
   useEffect(() => {
@@ -71,6 +72,14 @@ function App() {
     if (filters.priceLevel.length > 0) {
       results = results.filter(venue =>
         filters.priceLevel.includes(venue.priceLevel)
+      );
+    }
+
+    if (filters.drinkingThemes && filters.drinkingThemes.length > 0) {
+      results = results.filter(venue => 
+        venue.drinkingThemes && venue.drinkingThemes.some(theme => 
+          filters.drinkingThemes!.includes(theme)
+        )
       );
     }
 
@@ -126,7 +135,8 @@ function App() {
   const activeFilterCount = 
     filters.dealTypes.length + 
     filters.priceLevel.length + 
-    (filters.activeNow ? 1 : 0);
+    (filters.activeNow ? 1 : 0) +
+    (filters.drinkingThemes?.length || 0);
 
   const headerOpacity = Math.min(scrollY / 100, 1);
 

@@ -9,10 +9,23 @@ import {
   Sparkle,
   Wine,
   Martini,
-  BeerBottle
+  BeerBottle,
+  BookOpen,
+  Crown,
+  Scroll,
+  MaskHappy,
+  Columns
 } from '@phosphor-icons/react';
-import { Bartender } from '@/lib/types';
+import { Bartender, DrinkingTheme } from '@/lib/types';
 import { motion } from 'framer-motion';
+
+const themeConfig: Record<DrinkingTheme, { label: string; icon: React.ReactNode }> = {
+  'famous-drunks': { label: 'Famous Drunks', icon: <Crown weight="fill" className="w-3 h-3" /> },
+  'literary': { label: 'Literary', icon: <BookOpen weight="fill" className="w-3 h-3" /> },
+  'archetypal': { label: 'Archetypal', icon: <MaskHappy weight="fill" className="w-3 h-3" /> },
+  'prohibition': { label: 'Prohibition', icon: <Scroll weight="fill" className="w-3 h-3" /> },
+  'ancient-rome': { label: 'Ancient Rome', icon: <Columns weight="fill" className="w-3 h-3" /> },
+};
 
 interface BartenderCardProps {
   bartender: Bartender;
@@ -67,6 +80,20 @@ export function BartenderCard({
                 </Badge>
               )}
             </div>
+            
+            {bartender.thematicStyle && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.1 }}
+                className="mb-2"
+              >
+                <Badge className="bg-gradient-to-r from-accent/20 to-secondary/20 text-accent border-accent/40 text-xs font-bold">
+                  {themeConfig[bartender.thematicStyle].icon}
+                  <span className="ml-1">{themeConfig[bartender.thematicStyle].label}</span>
+                </Badge>
+              </motion.div>
+            )}
             
             <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
               <div className="flex items-center gap-1">
