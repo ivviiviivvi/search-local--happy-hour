@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Toaster } from '@/components/ui/sonner';
 import { toast } from 'sonner';
 import { VenueCard } from '@/components/VenueCard';
@@ -17,11 +18,16 @@ import { EventCard } from '@/components/EventCard';
 import { SocialThreadCard } from '@/components/SocialThreadCard';
 import { CalendarView } from '@/components/CalendarView';
 import { DailyContentDisplay } from '@/components/DailyContentDisplay';
-import { MagnifyingGlass, FunnelSimple, Heart, MapPin, Sparkle, CalendarBlank, Users as UsersIcon, Fire, ChatCircleDots } from '@phosphor-icons/react';
-import { Venue, FilterState, UserRole, ThemedEvent, DrinkingTheme, DailyContent } from '@/lib/types';
+import { ThreadChat } from '@/components/ThreadChat';
+import { UserProfileModal } from '@/components/UserProfileModal';
+import { BartenderScheduling } from '@/components/BartenderScheduling';
+import { DrinkingGamesGenerator } from '@/components/DrinkingGamesGenerator';
+import { MagnifyingGlass, FunnelSimple, Heart, MapPin, Sparkle, CalendarBlank, Users as UsersIcon, Fire, ChatCircleDots, User, DiceFive, Briefcase } from '@phosphor-icons/react';
+import { Venue, FilterState, UserRole, ThemedEvent, DrinkingTheme, DailyContent, SocialThread, UserProfile, VenueVisit, Achievement } from '@/lib/types';
 import { MOCK_VENUES, MOCK_BARTENDERS, MOCK_EVENTS, MOCK_SOCIAL_THREADS, MOCK_CALENDAR_EVENTS } from '@/lib/mock-data';
 import { isDealActiveNow } from '@/lib/time-utils';
 import { generateDailyContent } from '@/lib/daily-content-service';
+import { checkAchievements } from '@/lib/achievement-system';
 import { motion, AnimatePresence } from 'framer-motion';
 
 function App() {
@@ -31,7 +37,12 @@ function App() {
   const [rsvpdEvents, setRsvpdEvents] = useKV<string[]>('rsvpd-events', []);
   const [selectedTheme, setSelectedTheme] = useKV<DrinkingTheme | null>('selected-theme', null);
   const [dailyContent, setDailyContent] = useKV<DailyContent | null>('daily-content', null);
+  const [visitHistory, setVisitHistory] = useKV<VenueVisit[]>('visit-history', []);
+  const [achievements, setAchievements] = useKV<Achievement[]>('achievements', []);
   const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
+  const [selectedThread, setSelectedThread] = useState<SocialThread | null>(null);
+  const [showProfile, setShowProfile] = useState(false);
+  const [showScheduling, setShowScheduling] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   const [activeTab, setActiveTab] = useState('venues');
@@ -112,9 +123,45 @@ function App() {
         return favs.filter(id => id !== venueId);
       }
       toast.success('Added to favorites!');
+      
+      const newVisit: VenueVisit = {
+        venueId,
+        date: new Date().toISOString(),
+        reviewed: false
+      };
+      setVisitHistory((current) => [...(current || []), newVisit]);
+      
       return [...favs, venueId];
     });
   };
+
+  useEffect(() => {
+    if (userRole && visitHistory && achievements) {
+      const userProfile: UserProfile = {
+        id: 'user-1',
+        role: userRole,
+        name: 'You',
+        email: 'user@example.com',
+        avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400',
+        favoriteVenues: favorites || [],
+        favoriteBartenders: favoriteBartenders || [],
+        following: [],
+        visitHistory: visitHistory,
+        achievements: achievements,
+        createdAt: new Date().toISOString()
+      };
+
+      const newAchievements = checkAchievements(userProfile, achievements);
+      if (newAchievements.length > 0) {
+        setAchievements((current) => [...(current || []), ...newAchievements]);
+        newAchievements.forEach(achievement => {
+          toast.success(`Achievement Unlocked! ${achievement.icon}`, {
+            description: achievement.title
+          });
+        });
+      }
+    }
+  }, [visitHistory?.length, favoriteBartenders?.length]);
 
   const toggleBartenderFollow = (bartenderId: string) => {
     setFavoriteBartenders((currentFavorites) => {
@@ -204,7 +251,9 @@ function App() {
                   Hello Happier Hour
                 </h1>
                 <p className="text-sm text-muted-foreground font-medium">
-                  {userRole === 'the-pourer' ? 'Bartender Dashboard' : 'Social drink discovery & cultural exploration'}
+                  {userRole === 'the-pourer' ? 'Bartender Dashboard' : 
+                   userRole === 'the-venue' ? 'Venue Management' :
+                   'Social drink discovery & cultural exploration'}
                 </p>
               </div>
             </div>
@@ -312,7 +361,7 @@ function App() {
                 transition={{ delay: 0.3 }}
                 className="glass-card p-2 rounded-3xl mb-8"
               >
-                <TabsList className="grid w-full grid-cols-5 bg-transparent gap-2">
+                <TabsList className="grid w-full grid-cols-7 bg-transparent gap-2">
                   <TabsTrigger 
                     value="venues" 
                     className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-primary-foreground rounded-2xl font-bold"
@@ -347,6 +396,20 @@ function App() {
                   >
                     <Sparkle className="w-5 h-5 mr-2" weight="fill" />
                     Daily
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="games"
+                    className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-secondary data-[state=active]:to-primary data-[state=active]:text-secondary-foreground rounded-2xl font-bold"
+                  >
+                    <DiceFive className="w-5 h-5 mr-2" weight="fill" />
+                    Games
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="profile"
+                    className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-primary-foreground rounded-2xl font-bold"
+                  >
+                    <User className="w-5 h-5 mr-2" weight="fill" />
+                    Profile
                   </TabsTrigger>
                 </TabsList>
               </motion.div>
@@ -557,11 +620,7 @@ function App() {
                     >
                       <SocialThreadCard
                         thread={thread}
-                        onClick={() => {
-                          toast.success('Thread feature coming soon!', {
-                            description: 'Join the conversation and meet fellow drink enthusiasts.'
-                          });
-                        }}
+                        onClick={() => setSelectedThread(thread)}
                       />
                     </motion.div>
                   ))}
@@ -590,6 +649,95 @@ function App() {
                     <p className="text-xl text-muted-foreground">Loading today's content...</p>
                   </motion.div>
                 )}
+              </TabsContent>
+
+              <TabsContent value="games" className="mt-0">
+                <DrinkingGamesGenerator />
+              </TabsContent>
+
+              <TabsContent value="profile" className="mt-0">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="space-y-6"
+                >
+                  <div className="glass-card p-8 rounded-3xl">
+                    <div className="flex items-center gap-3 mb-6">
+                      <User weight="fill" className="w-6 h-6 text-accent" />
+                      <h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                        Your Profile
+                      </h2>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                      <div className="glass-morphic p-6 rounded-2xl text-center">
+                        <div className="text-4xl font-bold text-accent mb-2">
+                          {(visitHistory || []).length}
+                        </div>
+                        <div className="text-sm text-muted-foreground">Total Visits</div>
+                      </div>
+                      <div className="glass-morphic p-6 rounded-2xl text-center">
+                        <div className="text-4xl font-bold text-primary mb-2">
+                          {new Set((visitHistory || []).map(v => v.venueId)).size}
+                        </div>
+                        <div className="text-sm text-muted-foreground">Unique Venues</div>
+                      </div>
+                      <div className="glass-morphic p-6 rounded-2xl text-center">
+                        <div className="text-4xl font-bold text-secondary mb-2">
+                          {(achievements || []).length}
+                        </div>
+                        <div className="text-sm text-muted-foreground">Achievements</div>
+                      </div>
+                    </div>
+                    <div className="flex gap-4">
+                      <Button
+                        onClick={() => setShowProfile(true)}
+                        className="flex-1 bg-gradient-to-r from-primary to-accent text-primary-foreground"
+                      >
+                        View Full Profile
+                      </Button>
+                      {(userRole === 'the-pourer' || userRole === 'the-venue') && (
+                        <Button
+                          onClick={() => setShowScheduling(true)}
+                          className="flex-1 bg-gradient-to-r from-secondary to-accent text-secondary-foreground"
+                        >
+                          <Briefcase className="mr-2" weight="fill" />
+                          {userRole === 'the-venue' ? 'Manage Jobs' : 'Find Jobs'}
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="glass-card p-8 rounded-3xl">
+                    <h3 className="text-xl font-bold mb-4">Recent Achievements</h3>
+                    {(achievements || []).length === 0 ? (
+                      <div className="text-center py-12">
+                        <div className="text-6xl mb-4">🏆</div>
+                        <h4 className="text-xl font-bold mb-2">No achievements yet</h4>
+                        <p className="text-muted-foreground">
+                          Start exploring to unlock achievements!
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {(achievements || []).slice(0, 4).map((achievement, index) => (
+                          <motion.div
+                            key={achievement.id}
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: index * 0.1 }}
+                            className="glass-morphic p-4 rounded-2xl text-center"
+                          >
+                            <div className="text-4xl mb-2">{achievement.icon}</div>
+                            <div className="font-bold text-sm mb-1">{achievement.title}</div>
+                            <div className="text-xs text-muted-foreground line-clamp-2">
+                              {achievement.description}
+                            </div>
+                          </motion.div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
               </TabsContent>
             </Tabs>
 
@@ -634,6 +782,56 @@ function App() {
         open={!!selectedVenue}
         onOpenChange={(open) => !open && setSelectedVenue(null)}
       />
+
+      <Dialog open={!!selectedThread} onOpenChange={(open) => !open && setSelectedThread(null)}>
+        <DialogContent className="max-w-4xl max-h-[90vh] p-0">
+          {selectedThread && (
+            <div className="p-6">
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold mb-2">{selectedThread.title}</h2>
+                <p className="text-muted-foreground">{selectedThread.description}</p>
+              </div>
+              <ThreadChat
+                threadId={selectedThread.id}
+                currentUserId="user-1"
+                currentUserName="You"
+                currentUserAvatar="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400"
+                currentUserRole={userRole || 'the-drinker'}
+              />
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {userRole && (
+        <>
+          <UserProfileModal
+            profile={{
+              id: 'user-1',
+              role: userRole,
+              name: 'You',
+              email: 'user@example.com',
+              avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400',
+              favoriteVenues: favorites || [],
+              favoriteBartenders: favoriteBartenders || [],
+              following: [],
+              visitHistory: visitHistory || [],
+              achievements: achievements || [],
+              createdAt: new Date().toISOString()
+            }}
+            open={showProfile}
+            onOpenChange={setShowProfile}
+          />
+
+          <BartenderScheduling
+            bartenderId={userRole === 'the-pourer' ? 'user-1' : undefined}
+            venueId={userRole === 'the-venue' ? 'user-venue-1' : undefined}
+            userRole={userRole === 'the-drinker' ? null : userRole}
+            open={showScheduling}
+            onOpenChange={setShowScheduling}
+          />
+        </>
+      )}
     </div>
   );
 }

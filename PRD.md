@@ -1,24 +1,91 @@
 # Planning Guide
 
-Hello Happier Hour is a social platform connecting bartenders and drink enthusiasts through curated happy hour experiences with rich thematic contextualization. Bartenders ("the-pourer") create and manage their venue profiles with custom menus and themed events, while customers ("the-drinker") discover, review, and connect with their favorite spots. **Enhanced with modern glassmorphism aesthetics, extensive animations, dynamic 3D interactions, comprehensive social features, calendar integration, and daily generative content across five drinking culture themes.**
+Hello Happier Hour is a social platform connecting bartenders, venues, and drink enthusiasts through curated happy hour experiences with rich thematic contextualization. Bartenders ("the-pourer") showcase their craft and find job opportunities, venues ("the-venue") manage hiring and scheduling, while customers ("the-drinker") discover, review, and connect with their favorite spots. **Enhanced with real-time chat, user profiles with achievement badges, visit history tracking, bartender scheduling systems, job board functionality, and AI-generated personalized drinking games across five drinking culture themes.**
 
 **Experience Qualities**:
-1. **Connected** - The platform bridges bartenders and customers, fostering genuine relationships and community through live and offline social threads, event planning, and real-time conversations.
-2. **Empowering** - Bartenders have complete control over their venue presence with professional tools. Customers discover personalized experiences filtered by rich cultural themes and influence the scene through reviews and favorites.
-3. **Vibrant** - The experience captures the energy of nightlife culture with personality-driven profiles, themed events, thematically contextualized color schemes, and dynamic content that evolves daily with generative stories and cocktail recommendations.
+1. **Connected** - The platform bridges bartenders, venues, and customers, fostering genuine relationships through real-time chat with reactions and mentions, live social threads, achievement sharing, and job networking.
+2. **Empowering** - Bartenders build portfolios and find work, venues hire talent efficiently, customers track their journey with achievements and visit history while discovering personalized experiences.
+3. **Vibrant** - The experience captures nightlife energy with personality-driven profiles, themed events, AI-generated drinking games, achievement unlocks, and dynamic daily content.
 
-**Complexity Level**: Complex Application (advanced functionality, user accounts, social features, generative AI content)
-  - Dual user role system (bartender/customer) with role-specific interfaces and permissions
-  - Profile management with customization, media uploads, and personal branding
-  - Social interactions: reviews, ratings, comments, favorites, following, live threads, offline discussions
-  - Content creation: custom menus, themed events, special announcements, daily stories
-  - Real-time updates and notifications for new deals and events
-  - Calendar integration with RSVP system and capacity tracking
-  - Five distinct thematic drinking cultures with unique color schemes and visual identities
-  - Daily generative content using AI: quotes, stories, cocktail recipes, historical facts
-  - **Enhanced UI/UX**: Advanced glassmorphism, 3D elements, comprehensive animations, floating decorations, real-time statistics, theme-specific visual treatments
+**Complexity Level**: Complex Application (advanced functionality, three user roles, social features, generative AI content, job marketplace)
+  - Triple user role system (bartender/customer/venue) with role-specific interfaces
+  - Profile management with achievement badges, visit history tracking, and career portfolios
+  - Social interactions: real-time chat, reactions, mentions, reviews, favorites, following
+  - Job marketplace: posting, applications, scheduling, bartender availability management
+  - AI-powered features: personalized drinking games, daily thematic content
+  - Real-time messaging with edit, delete, mention, and reaction capabilities
+  - Achievement system tracking user milestones and venue exploration
+  - **Enhanced UI/UX**: Glassmorphism, animations, theme-specific treatments
 
 ## Essential Features
+
+### Real-Time Chat with Reactions & Mentions
+- **Functionality**: In-thread messaging with emoji reactions, @mentions, message editing, deletion, and real-time updates
+- **Purpose**: Enable authentic conversations, coordinate meetups, build community connections with expressive communication
+- **Trigger**: Click on social thread, mention another user, react to message
+- **Progression**: Enter thread → Read messages → Type message → Mention users with @ → Send → React with emoji → Edit/delete own messages
+- **Success criteria**: 80% of thread participants send messages; average 15 reactions per thread; mentions increase response rate 3x
+- **Features**:
+  - Real-time message updates
+  - 8 emoji reactions (👍 ❤️ 😂 🎉 🍻 🔥 👀 ✨)
+  - @username mentions with highlighting
+  - Edit and delete own messages
+  - Reply threading
+  - User role badges in chat
+
+### User Profiles with Achievements & Visit History
+- **Functionality**: Comprehensive user profiles displaying stats, achievement badges with progress tracking, complete visit history, and favorite venues/bartenders
+- **Purpose**: Gamify the experience, track personal journey, showcase expertise, motivate exploration
+- **Trigger**: Profile tab, achievement unlock, venue visit, milestone reached
+- **Progression**: Visit venues → Track automatically → Unlock achievements → View progress → Share accomplishments
+- **Success criteria**: Users with 5+ achievements visit 2x more venues; 70% check their profile weekly
+- **Achievement Categories**:
+  - **Explorer** (First Pour, Regular, Neighborhood Explorer, City Connoisseur, Living Legend)
+  - **Social** (Event Enthusiast, Party Animal, Voice of the People, Social Butterfly)
+  - **Connoisseur** (Theme exploration badges for all 5 themes, Theme Master)
+  - **Supporter** (Bartender Supporter, Super Fan)
+  - **Special** (Rare milestone achievements)
+- **Rarity Tiers**: Common, Rare, Epic, Legendary (with distinct visual treatments)
+
+### Bartender Scheduling & Job Marketplace
+- **Functionality**: Bartenders view their weekly schedule, browse job openings, apply with resume. Venues post jobs, manage applicants, schedule staff
+- **Purpose**: Connect talent with opportunities, streamline hiring, manage workforce, enable career growth
+- **Trigger**: Profile → Job Board (bartender) or Manage Jobs (venue), schedule view
+- **Progression**: 
+  - **Bartender**: Browse jobs → View requirements → Apply → Track status → Get hired → View schedule
+  - **Venue**: Post opening → Review applications → Interview → Hire → Create schedule → Assign shifts
+- **Success criteria**: 60% of job postings filled within 2 weeks; bartenders find 50% more opportunities
+- **Job Posting Elements**:
+  - Title, description, requirements
+  - Pay range, benefits
+  - Schedule needs (days/times)
+  - Application tracking
+  - Status updates (open/reviewing/filled)
+
+### AI-Generated Personalized Drinking Games
+- **Functionality**: Generate unique drinking games based on theme, player count, difficulty, and personal preferences using AI
+- **Purpose**: Enhance social experience, provide entertainment, create memorable moments, integrate cultural themes
+- **Trigger**: Games tab, select preferences, generate button
+- **Progression**: Choose theme → Set players (2-12) → Select difficulty → Generate → Read rules → Play game → Generate another
+- **Success criteria**: 50% of users generate a game; games are regenerated 3x on average; social sharing increases 4x
+- **Customization Options**:
+  - Theme: Famous Drunks, Literary, Archetypal, Prohibition, Ancient Rome
+  - Player count: 2-12 players
+  - Difficulty: Easy, Medium, Hard
+- **Generated Content**:
+  - Unique game name
+  - Complete rules (5-8 steps)
+  - Required materials
+  - Estimated duration
+  - 2-3 variations
+  - Theme-appropriate context
+
+### Venue Role & Management
+- **Functionality**: Third user role for venue owners/managers to post jobs, manage staff scheduling, track applicants, promote events
+- **Purpose**: Complete the marketplace ecosystem, enable venue-side management, attract quality staff
+- **Trigger**: Role selection, venue dashboard access
+- **Progression**: Sign up as venue → Create profile → Post job openings → Review applicants → Schedule interviews → Hire staff → Manage schedules → Promote events
+- **Success criteria**: 40% of venues post jobs within first month; hired bartenders have 85% retention rate
 
 ### Thematic Drinking Cultures
 - **Functionality**: Five distinct cultural themes each with unique color schemes, visual treatments, and contextualized content

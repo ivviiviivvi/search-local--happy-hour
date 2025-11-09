@@ -1,7 +1,7 @@
 export type DealType = 'beer' | 'wine' | 'cocktails' | 'food' | 'all';
 export type PriceLevel = 1 | 2 | 3;
 export type DayOfWeek = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday';
-export type UserRole = 'the-pourer' | 'the-drinker' | null;
+export type UserRole = 'the-pourer' | 'the-drinker' | 'the-venue' | null;
 export type DrinkingTheme = 'famous-drunks' | 'literary' | 'archetypal' | 'prohibition' | 'ancient-rome';
 
 export interface TimeRange {
@@ -231,4 +231,88 @@ export interface ThemeColorScheme {
   textSecondary: string;
   borderColor: string;
   glowColor: string;
+}
+
+export interface BartenderSchedule {
+  id: string;
+  bartenderId: string;
+  venueId: string;
+  dayOfWeek: DayOfWeek;
+  startTime: string;
+  endTime: string;
+  isRecurring: boolean;
+  status: 'scheduled' | 'available' | 'unavailable';
+}
+
+export interface VenueProfile extends UserProfile {
+  venueDetails: {
+    venueId: string;
+    operatingHours: Record<DayOfWeek, TimeRange | null>;
+    capacity: number;
+    staffCount: number;
+    jobOpenings: JobPosting[];
+    currentStaff: string[];
+  };
+}
+
+export interface JobPosting {
+  id: string;
+  venueId: string;
+  venueName: string;
+  title: string;
+  description: string;
+  requirements: string[];
+  schedule: string;
+  payRange: string;
+  benefits: string[];
+  postedAt: string;
+  status: 'open' | 'closed' | 'filled';
+  applicants: number;
+}
+
+export interface BartenderApplication {
+  id: string;
+  bartenderId: string;
+  jobId: string;
+  resume: string;
+  coverLetter: string;
+  availability: BartenderSchedule[];
+  appliedAt: string;
+  status: 'pending' | 'reviewing' | 'accepted' | 'rejected';
+}
+
+export interface DrinkingGame {
+  id: string;
+  name: string;
+  description: string;
+  rules: string[];
+  difficulty: 'easy' | 'medium' | 'hard';
+  playerCount: { min: number; max: number };
+  duration: string;
+  drinkingTheme?: DrinkingTheme;
+  materials: string[];
+  variations?: string[];
+  generatedAt: string;
+  personalizedFor?: string;
+}
+
+export interface ChatMessage extends ThreadMessage {
+  replyTo?: string;
+  edited?: boolean;
+  editedAt?: string;
+  deleted?: boolean;
+}
+
+export interface AchievementType {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  category: 'explorer' | 'social' | 'connoisseur' | 'supporter' | 'special';
+  requirement: {
+    type: 'visit_count' | 'venue_count' | 'bartender_follow' | 'event_attend' | 'review_count' | 'social_engagement' | 'theme_exploration';
+    target: number;
+    theme?: DrinkingTheme;
+  };
+  rarity: 'common' | 'rare' | 'epic' | 'legendary';
 }
