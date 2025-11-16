@@ -307,6 +307,42 @@ export interface ChatMessage extends ThreadMessage {
   deleted?: boolean;
 }
 
+export interface DirectMessageConversation {
+  id: string;
+  participant1: {
+    id: string;
+    name: string;
+    avatar: string;
+    role: UserRole;
+  };
+  participant2: {
+    id: string;
+    name: string;
+    avatar: string;
+    role: UserRole;
+  };
+  lastMessage?: {
+    content: string;
+    timestamp: string;
+    senderId: string;
+  };
+  unreadCount: number;
+  createdAt: string;
+}
+
+export interface DirectMessage {
+  id: string;
+  conversationId: string;
+  senderId: string;
+  senderName: string;
+  senderAvatar: string;
+  content: string;
+  timestamp: string;
+  read: boolean;
+  edited?: boolean;
+  editedAt?: string;
+}
+
 export interface AchievementType {
   id: string;
   title: string;

@@ -23,8 +23,10 @@ import { UserProfileModal } from '@/components/UserProfileModal';
 import { BartenderScheduling } from '@/components/BartenderScheduling';
 import { DrinkingGamesGenerator } from '@/components/DrinkingGamesGenerator';
 import { ReviewSubmissionModal } from '@/components/ReviewSubmissionModal';
-import { MagnifyingGlass, FunnelSimple, Heart, MapPin, Sparkle, CalendarBlank, Users as UsersIcon, Fire, ChatCircleDots, User, DiceFive, Briefcase } from '@phosphor-icons/react';
-import { Venue, FilterState, UserRole, ThemedEvent, DrinkingTheme, DailyContent, SocialThread, UserProfile, VenueVisit, Achievement, Review } from '@/lib/types';
+import { DirectMessageList } from '@/components/DirectMessageList';
+import { DirectMessageThread } from '@/components/DirectMessageThread';
+import { MagnifyingGlass, FunnelSimple, Heart, MapPin, Sparkle, CalendarBlank, Users as UsersIcon, Fire, ChatCircleDots, User, DiceFive, Briefcase, Envelope } from '@phosphor-icons/react';
+import { Venue, FilterState, UserRole, ThemedEvent, DrinkingTheme, DailyContent, SocialThread, UserProfile, VenueVisit, Achievement, Review, DirectMessageConversation, DirectMessage } from '@/lib/types';
 import { MOCK_VENUES, MOCK_BARTENDERS, MOCK_EVENTS, MOCK_SOCIAL_THREADS, MOCK_CALENDAR_EVENTS } from '@/lib/mock-data';
 import { isDealActiveNow } from '@/lib/time-utils';
 import { generateDailyContent } from '@/lib/daily-content-service';
@@ -43,9 +45,11 @@ function App() {
   const [visitHistory, setVisitHistory] = useKV<VenueVisit[]>('visit-history', []);
   const [achievements, setAchievements] = useKV<Achievement[]>('achievements', []);
   const [userReviews, setUserReviews] = useKV<Review[]>('user-reviews', []);
+  const [dmConversations, setDmConversations] = useKV<DirectMessageConversation[]>('dm-conversations', []);
   const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [selectedThread, setSelectedThread] = useState<SocialThread | null>(null);
+  const [selectedDMConversation, setSelectedDMConversation] = useState<DirectMessageConversation | null>(null);
   const [showProfile, setShowProfile] = useState(false);
   const [showScheduling, setShowScheduling] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
@@ -238,6 +242,73 @@ function App() {
     );
   };
 
+  const startDirectMessage = (recipientId: string, recipientName: string, recipientAvatar: string, recipientRole: UserRole) => {
+    // Check if conversation already exists
+    const existingConversation = dmConversations?.find(conv =>
+      (conv.participant1.id === 'user-1' && conv.participant2.id === recipientId) ||
+      (conv.participant2.id === 'user-1' && conv.participant1.id === recipientId)
+    );
+
+    if (existingConversation) {
+      setSelectedDMConversation(existingConversation);
+      setActiveTab('messages');
+      return;
+    }
+
+    // Create new conversation
+    const newConversation: DirectMessageConversation = {
+      id: `conv-${Date.now()}`,
+      participant1: {
+        id: 'user-1',
+        name: 'You',
+        avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400',
+        role: userRole || 'the-drinker'
+      },
+      participant2: {
+        id: recipientId,
+        name: recipientName,
+        avatar: recipientAvatar,
+        role: recipientRole
+      },
+      unreadCount: 0,
+      createdAt: new Date().toISOString()
+    };
+
+    setDmConversations((current) => [...(current || []), newConversation]);
+    setSelectedDMConversation(newConversation);
+    setActiveTab('messages');
+    toast.success(`Started conversation with ${recipientName}`);
+  };
+
+  const handleDMSent = (conversationId: string) => {
+    // Update last message in conversation
+    setDmConversations((current) => {
+      const conversations = current || [];
+      return conversations.map(conv => {
+        if (conv.id === conversationId) {
+          // Get the messages for this conversation from localStorage
+          const messagesKey = `dm-${conversationId}`;
+          const storedMessages = localStorage.getItem(messagesKey);
+          if (storedMessages) {
+            const messages: DirectMessage[] = JSON.parse(storedMessages);
+            const lastMessage = messages[messages.length - 1];
+            if (lastMessage) {
+              return {
+                ...conv,
+                lastMessage: {
+                  content: lastMessage.content,
+                  timestamp: lastMessage.timestamp,
+                  senderId: lastMessage.senderId
+                }
+              };
+            }
+          }
+        }
+        return conv;
+      });
+    });
+  };
+
   const allEvents = useMemo(() => {
     const events: ThemedEvent[] = [];
     MOCK_VENUES.forEach(venue => {
@@ -412,50 +483,62 @@ function App() {
                 transition={{ delay: 0.3 }}
                 className="glass-card p-2 rounded-3xl mb-8"
               >
-                <TabsList className="grid w-full grid-cols-7 bg-transparent gap-2">
-                  <TabsTrigger 
-                    value="venues" 
+                <TabsList className="grid w-full grid-cols-8 bg-transparent gap-2">
+                  <TabsTrigger
+                    value="venues"
                     className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-primary-foreground rounded-2xl font-bold"
                   >
                     <Fire className="w-5 h-5 mr-2" weight="fill" />
                     Venues
                   </TabsTrigger>
-                  <TabsTrigger 
+                  <TabsTrigger
                     value="bartenders"
                     className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-secondary data-[state=active]:to-accent data-[state=active]:text-secondary-foreground rounded-2xl font-bold"
                   >
                     <UsersIcon className="w-5 h-5 mr-2" weight="fill" />
                     Bartenders
                   </TabsTrigger>
-                  <TabsTrigger 
+                  <TabsTrigger
                     value="events"
                     className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-accent data-[state=active]:to-secondary data-[state=active]:text-accent-foreground rounded-2xl font-bold"
                   >
                     <CalendarBlank className="w-5 h-5 mr-2" weight="fill" />
                     Events
                   </TabsTrigger>
-                  <TabsTrigger 
+                  <TabsTrigger
                     value="social"
                     className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-secondary data-[state=active]:text-primary-foreground rounded-2xl font-bold"
                   >
                     <ChatCircleDots className="w-5 h-5 mr-2" weight="fill" />
                     Social
                   </TabsTrigger>
-                  <TabsTrigger 
+                  <TabsTrigger
+                    value="messages"
+                    className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-accent data-[state=active]:to-primary data-[state=active]:text-accent-foreground rounded-2xl font-bold relative"
+                  >
+                    <Envelope className="w-5 h-5 mr-2" weight="fill" />
+                    Messages
+                    {dmConversations && dmConversations.filter(c => c.unreadCount > 0).length > 0 && (
+                      <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center bg-accent text-xs">
+                        {dmConversations.filter(c => c.unreadCount > 0).length}
+                      </Badge>
+                    )}
+                  </TabsTrigger>
+                  <TabsTrigger
                     value="daily"
                     className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-accent data-[state=active]:to-primary data-[state=active]:text-accent-foreground rounded-2xl font-bold"
                   >
                     <Sparkle className="w-5 h-5 mr-2" weight="fill" />
                     Daily
                   </TabsTrigger>
-                  <TabsTrigger 
+                  <TabsTrigger
                     value="games"
                     className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-secondary data-[state=active]:to-primary data-[state=active]:text-secondary-foreground rounded-2xl font-bold"
                   >
                     <DiceFive className="w-5 h-5 mr-2" weight="fill" />
                     Games
                   </TabsTrigger>
-                  <TabsTrigger 
+                  <TabsTrigger
                     value="profile"
                     className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-primary-foreground rounded-2xl font-bold"
                   >
@@ -589,6 +672,9 @@ function App() {
                           const venue = MOCK_VENUES.find(v => v.bartenders?.some(b => b.id === id));
                           if (venue) setSelectedVenue(venue);
                         }}
+                        onMessage={(id, name, avatar) => {
+                          startDirectMessage(id, name, avatar, 'the-pourer');
+                        }}
                       />
                     </motion.div>
                   ))}
@@ -676,6 +762,32 @@ function App() {
                     </motion.div>
                   ))}
                 </div>
+              </TabsContent>
+
+              <TabsContent value="messages" className="mt-0">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="glass-card rounded-3xl overflow-hidden h-[700px] flex"
+                >
+                  {selectedDMConversation ? (
+                    <DirectMessageThread
+                      conversation={selectedDMConversation}
+                      currentUserId="user-1"
+                      currentUserName="You"
+                      currentUserAvatar="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400"
+                      onBack={() => setSelectedDMConversation(null)}
+                      onMessageSent={handleDMSent}
+                    />
+                  ) : (
+                    <DirectMessageList
+                      conversations={dmConversations || []}
+                      currentUserId="user-1"
+                      onSelectConversation={setSelectedDMConversation}
+                      selectedConversationId={selectedDMConversation?.id}
+                    />
+                  )}
+                </motion.div>
               </TabsContent>
 
               <TabsContent value="daily" className="mt-0">
