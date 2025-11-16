@@ -25,8 +25,10 @@ import { DrinkingGamesGenerator } from '@/components/DrinkingGamesGenerator';
 import { ReviewSubmissionModal } from '@/components/ReviewSubmissionModal';
 import { DirectMessageList } from '@/components/DirectMessageList';
 import { DirectMessageThread } from '@/components/DirectMessageThread';
-import { MagnifyingGlass, FunnelSimple, Heart, MapPin, Sparkle, CalendarBlank, Users as UsersIcon, Fire, ChatCircleDots, User, DiceFive, Briefcase, Envelope } from '@phosphor-icons/react';
-import { Venue, FilterState, UserRole, ThemedEvent, DrinkingTheme, DailyContent, SocialThread, UserProfile, VenueVisit, Achievement, Review, DirectMessageConversation, DirectMessage } from '@/lib/types';
+import { EventCreationModal } from '@/components/EventCreationModal';
+import { MenuItemEditor } from '@/components/MenuItemEditor';
+import { MagnifyingGlass, FunnelSimple, Heart, MapPin, Sparkle, CalendarBlank, Users as UsersIcon, Fire, ChatCircleDots, User, DiceFive, Briefcase, Envelope, Plus, Martini } from '@phosphor-icons/react';
+import { Venue, FilterState, UserRole, ThemedEvent, DrinkingTheme, DailyContent, SocialThread, UserProfile, VenueVisit, Achievement, Review, DirectMessageConversation, DirectMessage, MenuItem } from '@/lib/types';
 import { MOCK_VENUES, MOCK_BARTENDERS, MOCK_EVENTS, MOCK_SOCIAL_THREADS, MOCK_CALENDAR_EVENTS } from '@/lib/mock-data';
 import { isDealActiveNow } from '@/lib/time-utils';
 import { generateDailyContent } from '@/lib/daily-content-service';
@@ -46,12 +48,16 @@ function App() {
   const [achievements, setAchievements] = useKV<Achievement[]>('achievements', []);
   const [userReviews, setUserReviews] = useKV<Review[]>('user-reviews', []);
   const [dmConversations, setDmConversations] = useKV<DirectMessageConversation[]>('dm-conversations', []);
+  const [userEvents, setUserEvents] = useKV<ThemedEvent[]>('user-events', []);
+  const [userMenuItems, setUserMenuItems] = useKV<MenuItem[]>('user-menu-items', []);
   const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [selectedThread, setSelectedThread] = useState<SocialThread | null>(null);
   const [selectedDMConversation, setSelectedDMConversation] = useState<DirectMessageConversation | null>(null);
   const [showProfile, setShowProfile] = useState(false);
   const [showScheduling, setShowScheduling] = useState(false);
+  const [showEventCreator, setShowEventCreator] = useState(false);
+  const [showMenuEditor, setShowMenuEditor] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   const [activeTab, setActiveTab] = useState('venues');
@@ -309,6 +315,23 @@ function App() {
     });
   };
 
+  const handleCreateEvent = (event: Omit<ThemedEvent, 'id'>) => {
+    const newEvent: ThemedEvent = {
+      ...event,
+      id: `event-${Date.now()}`
+    };
+    setUserEvents((current) => [...(current || []), newEvent]);
+  };
+
+  const handleCreateMenuItem = (item: Omit<MenuItem, 'id' | 'createdAt'>) => {
+    const newItem: MenuItem = {
+      ...item,
+      id: `menu-${Date.now()}`,
+      createdAt: new Date().toISOString()
+    };
+    setUserMenuItems((current) => [...(current || []), newItem]);
+  };
+
   const allEvents = useMemo(() => {
     const events: ThemedEvent[] = [];
     MOCK_VENUES.forEach(venue => {
@@ -316,8 +339,12 @@ function App() {
         venue.events.forEach(event => events.push(event));
       }
     });
+    // Add user-created events
+    if (userEvents) {
+      events.push(...userEvents);
+    }
     return events.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  }, []);
+  }, [userEvents]);
 
   const activeFilterCount = 
     filters.dealTypes.length + 
@@ -687,11 +714,22 @@ function App() {
                   animate={{ opacity: 1, y: 0 }}
                   className="glass-card p-8 rounded-3xl mb-8"
                 >
-                  <div className="flex items-center gap-3 mb-2">
-                    <CalendarBlank weight="fill" className="w-6 h-6 text-accent" />
-                    <h2 className="text-3xl font-bold bg-gradient-to-r from-accent to-secondary bg-clip-text text-transparent">
-                      Upcoming Events
-                    </h2>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-3">
+                      <CalendarBlank weight="fill" className="w-6 h-6 text-accent" />
+                      <h2 className="text-3xl font-bold bg-gradient-to-r from-accent to-secondary bg-clip-text text-transparent">
+                        Upcoming Events
+                      </h2>
+                    </div>
+                    {userRole === 'the-pourer' && (
+                      <Button
+                        onClick={() => setShowEventCreator(true)}
+                        className="bg-gradient-to-r from-primary to-accent hover:opacity-90"
+                      >
+                        <Plus className="w-4 h-4 mr-2" weight="bold" />
+                        Create Event
+                      </Button>
+                    )}
                   </div>
                   <p className="text-muted-foreground text-lg">
                     Don't miss out on themed nights and special experiences
@@ -824,6 +862,39 @@ function App() {
                   animate={{ opacity: 1, y: 0 }}
                   className="space-y-6"
                 >
+                  {userRole === 'the-pourer' && (
+                    <div className="glass-card p-6 rounded-3xl">
+                      <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                        <Martini weight="fill" className="text-accent" />
+                        Bartender Tools
+                      </h3>
+                      <div className="grid grid-cols-2 gap-4">
+                        <Button
+                          onClick={() => setShowEventCreator(true)}
+                          variant="outline"
+                          className="glass-morphic border-accent/50 hover:border-accent h-auto py-4"
+                        >
+                          <div className="flex flex-col items-center gap-2">
+                            <CalendarBlank className="w-6 h-6" weight="fill" />
+                            <span className="font-bold">Create Event</span>
+                            <span className="text-xs text-muted-foreground">Host themed experiences</span>
+                          </div>
+                        </Button>
+                        <Button
+                          onClick={() => setShowMenuEditor(true)}
+                          variant="outline"
+                          className="glass-morphic border-accent/50 hover:border-accent h-auto py-4"
+                        >
+                          <div className="flex flex-col items-center gap-2">
+                            <Martini className="w-6 h-6" weight="fill" />
+                            <span className="font-bold">Add Menu Item</span>
+                            <span className="text-xs text-muted-foreground">Create signature drinks</span>
+                          </div>
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
                   <div className="glass-card p-8 rounded-3xl">
                     <div className="flex items-center gap-3 mb-6">
                       <User weight="fill" className="w-6 h-6 text-accent" />
@@ -1012,6 +1083,22 @@ function App() {
             currentUserId="user-1"
             currentUserName="You"
             currentUserAvatar="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400"
+          />
+
+          <EventCreationModal
+            open={showEventCreator}
+            onOpenChange={setShowEventCreator}
+            onSubmit={handleCreateEvent}
+            bartenderId="user-1"
+            bartenderName="You"
+            venues={MOCK_VENUES}
+          />
+
+          <MenuItemEditor
+            open={showMenuEditor}
+            onOpenChange={setShowMenuEditor}
+            onSubmit={handleCreateMenuItem}
+            bartenderId="user-1"
           />
         </>
       )}
