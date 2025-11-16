@@ -401,3 +401,21 @@ export interface AchievementType {
   };
   rarity: 'common' | 'rare' | 'epic' | 'legendary';
 }
+
+export interface Notification {
+  id: string;
+  type: 'review' | 'application' | 'message' | 'rsvp' | 'achievement' | 'follow' | 'event' | 'job';
+  title: string;
+  description: string;
+  timestamp: string;
+  read: boolean;
+  actionUrl?: string;
+  icon?: string;
+  metadata?: {
+    userId?: string;
+    venueId?: string;
+    eventId?: string;
+    jobId?: string;
+    achievementId?: string;
+  };
+}

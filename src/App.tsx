@@ -29,8 +29,10 @@ import { EventCreationModal } from '@/components/EventCreationModal';
 import { MenuItemEditor } from '@/components/MenuItemEditor';
 import { HappyHourSpecialCreator } from '@/components/HappyHourSpecialCreator';
 import { VenueManagementDashboard } from '@/components/VenueManagementDashboard';
+import { NotificationCenter } from '@/components/NotificationCenter';
 import { MagnifyingGlass, FunnelSimple, Heart, MapPin, Sparkle, CalendarBlank, Users as UsersIcon, Fire, ChatCircleDots, User, DiceFive, Briefcase, Envelope, Plus, Martini } from '@phosphor-icons/react';
-import { Venue, FilterState, UserRole, ThemedEvent, DrinkingTheme, DailyContent, SocialThread, UserProfile, VenueVisit, Achievement, Review, DirectMessageConversation, DirectMessage, MenuItem, Deal } from '@/lib/types';
+import { Venue, FilterState, UserRole, ThemedEvent, DrinkingTheme, DailyContent, SocialThread, UserProfile, VenueVisit, Achievement, Review, DirectMessageConversation, DirectMessage, MenuItem, Deal, Notification } from '@/lib/types';
+import { createAchievementNotification, addNotification as addNotificationHelper } from '@/lib/notification-service';
 import { MOCK_VENUES, MOCK_BARTENDERS, MOCK_EVENTS, MOCK_SOCIAL_THREADS, MOCK_CALENDAR_EVENTS } from '@/lib/mock-data';
 import { isDealActiveNow } from '@/lib/time-utils';
 import { generateDailyContent } from '@/lib/daily-content-service';
@@ -53,6 +55,7 @@ function App() {
   const [userEvents, setUserEvents] = useKV<ThemedEvent[]>('user-events', []);
   const [userMenuItems, setUserMenuItems] = useKV<MenuItem[]>('user-menu-items', []);
   const [venueDeals, setVenueDeals] = useKV<Deal[]>('venue-deals', []);
+  const [notifications, setNotifications] = useKV<Notification[]>('notifications', []);
   const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [selectedThread, setSelectedThread] = useState<SocialThread | null>(null);
@@ -183,6 +186,14 @@ function App() {
           toast.success(`Achievement Unlocked! ${achievement.icon}`, {
             description: achievement.title
           });
+
+          // Create notification for achievement
+          const notif = createAchievementNotification(
+            achievement.title,
+            achievement.description,
+            achievement.icon
+          );
+          setNotifications((current) => addNotificationHelper(current || [], notif));
         });
       }
     }
@@ -422,9 +433,10 @@ function App() {
               </div>
             </div>
             <div className="flex items-center gap-2">
+              <NotificationCenter />
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="icon"
                   onClick={() => setShowFilters(!showFilters)}
                   className="relative glass-morphic border-border/50 hover:border-accent/50 transition-all duration-300"
